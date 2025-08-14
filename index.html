@@ -111,8 +111,9 @@
     }
 
     .logo {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
         opacity: 0.7;
         transition: opacity 0.3s;
     }
@@ -184,38 +185,19 @@
     }
 
     /* Ashoka Chakra */
-
-    @media (prefers-reduced-motion) {
-        .chakra-container {
-            animation: none;
-        }
+    .chakra-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 1rem auto;
     }
 
-    .chakra {
+    .flag-img {
         width: 100%;
         height: 100%;
-    }
-
-    .chakra-glow {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 70%);
-        opacity: 0.5;
-        animation: glowPulse 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes rotateChakra {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    @keyframes glowPulse {
-        0% { opacity: 0.3; transform: scale(0.95); }
-        100% { opacity: 0.7; transform: scale(1.05); }
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     /* Countdown */
@@ -737,10 +719,7 @@
     <!-- Header -->
     <header>
         <a href="https://raodevlopers.xyz" aria-label="Rao Developers">
-  <img 
-    src="https://i.ibb.co/pGyM0P1/Picsart-25-08-14-08-55-52-864.jpg" 
-    alt="Rao Developers Logo" 
-    style="width: 80px; height: 80px; object-fit: contain;">
+            <img class="logo" src="https://i.ibb.co/pGyM0P1/Picsart-25-08-14-08-55-52-864.jpg" alt="Rao Developers Logo">
         </a>
     </header>
 
@@ -748,11 +727,8 @@
     <main>
         <!-- Hero Section -->
         <section class="hero">
-<div class="chakra-container" style="animation:none;">
-    <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" 
-         alt="Indian Flag" 
-         style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
-</div>
+            <div class="chakra-container">
+                <img class="flag-img" src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag">
             </div>
             
             <h1 id="heroTitle">Happy Independence Day</h1>
@@ -935,7 +911,7 @@
 
     <!-- Audio Elements -->
     <audio id="bgMusic" loop></audio>
-    <audio id="anthemAudio" src="jana_gana_mana.mp3"></audio>
+    <audio id="anthemAudio"></audio>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1012,6 +988,9 @@
         }
         
         function setupAudio() {
+            // Set anthem audio source
+            anthemAudio.src = 'jana_gana_mana.mp3';
+            
             // Background music (simple synth tone to reduce size)
             try {
                 // Try to create Web Audio context
@@ -1029,12 +1008,9 @@
                 gainNode.connect(audioContext.destination);
                 oscillator.start();
                 
-                
                 // Store nodes for later use
                 bgMusic.oscillator = oscillator;
                 bgMusic.gainNode = gainNode;
-                anthemAudio.oscillator = anthemOscillator;
-                anthemAudio.gainNode = anthemGain;
                 
                 // Set music as allowed if autoplay works
                 setTimeout(() => {
@@ -1306,10 +1282,6 @@
                     }
                 }
             }
-            
-            // Note: This is a very simplified QR-like code. A real QR code would require
-            // error correction, proper encoding, etc. For a production site, you'd want
-            // to use a proper QR code library, but this gives a visual representation.
         }
         
         function playBackgroundMusic() {
@@ -1344,44 +1316,28 @@
         }
         
         function playAnthem() {
-            if (!audioContext) return;
-            
             stopAnthem(); // Stop any existing playback
             
             try {
-                // Simple rendition of Jana Gana Mana using Web Audio API
-                const now = audioContext.currentTime;
-                const gain = anthemAudio.gainNode;
-                const osc = anthemAudio.oscillator;
-                
-                // Fade in
-                gain.gain.cancelScheduledValues(now);
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.1, now + 1);
-                
-                // First line: जन-गण-मन अधिनायक जय हे
-                osc.frequency.setValueAtTime(392, now); // G
-                osc.frequency.setValueAtTime(440, now + 0.5); // A
-                osc.frequency.setValueAtTime(494, now + 1); // B
-                osc.frequency.setValueAtTime(523, now + 1.5); // C
-                osc.frequency.setValueAtTime(587, now + 2); // D
-                osc.frequency.setValueAtTime(659, now + 2.5); // E
-                osc.frequency.setValueAtTime(587, now + 3); // D
-                osc.frequency.setValueAtTime(523, now + 3.5); // C
-                
-                // Highlight first line
-                highlightAnthemLine(0);
-                
-                // Set up interval to highlight lines
-                currentAnthemLine = 0;
-                anthemInterval = setInterval(() => {
-                    currentAnthemLine++;
-                    if (currentAnthemLine >= anthemLyrics.children.length) {
-                        currentAnthemLine = 0;
-                    }
-                    highlightAnthemLine(currentAnthemLine);
-                }, 5000); // Change line every 5 seconds
-                
+                // Play the anthem audio
+                anthemAudio.play().then(() => {
+                    // Highlight first line
+                    highlightAnthemLine(0);
+                    
+                    // Set up interval to highlight lines
+                    currentAnthemLine = 0;
+                    anthemInterval = setInterval(() => {
+                        currentAnthemLine++;
+                        if (currentAnthemLine >= anthemLyrics.children.length) {
+                            clearInterval(anthemInterval);
+                            return;
+                        }
+                        highlightAnthemLine(currentAnthemLine);
+                    }, 5000); // Change line every 5 seconds
+                }).catch(e => {
+                    showToast('Tap play to enable sound');
+                    console.error('Audio playback failed:', e);
+                });
             } catch (e) {
                 console.error('Error playing anthem', e);
             }
@@ -1393,15 +1349,9 @@
                 anthemInterval = null;
             }
             
-            if (!audioContext) return;
-            
-            const now = audioContext.currentTime;
-            const gain = anthemAudio.gainNode;
-            
-            // Fade out
-            gain.gain.cancelScheduledValues(now);
-            gain.gain.setValueAtTime(gain.gain.value, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.5);
+            // Pause the anthem
+            anthemAudio.pause();
+            anthemAudio.currentTime = 0;
             
             // Remove active class from all lines
             Array.from(anthemLyrics.children).forEach(line => {
