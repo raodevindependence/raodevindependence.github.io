@@ -1178,13 +1178,27 @@
         }
         
         function updatePersonalizedView() {
-            // Update hero title and subtitle
-            heroTitle.textContent = `Happy Independence Day from ${userName}`;
-            heroSubtitle.textContent = `${userName} की तरफ से स्वतंत्रता दिवस की शुभकामनाएं`;
-            
-            // Hide name input form
-            nameFormContainer.style.display = 'none';
-        }
+    // Update hero title and subtitle
+    heroTitle.textContent = `Happy Independence Day from ${userName}`;
+    heroSubtitle.textContent = `${userName} की तरफ से स्वतंत्रता दिवस की शुभकामनाएं`;
+
+    // Hide name input form
+    nameFormContainer.style.display = 'none';
+
+    // Make for Yourself button
+    if (!document.getElementById('makeForYourselfBtn')) {
+        const makeBtn = document.createElement('button');
+        makeBtn.id = 'makeForYourselfBtn';
+        makeBtn.textContent = 'Make for Yourself';
+        makeBtn.className = 'btn btn-secondary';
+        makeBtn.style.marginTop = '1rem';
+        makeBtn.onclick = () => {
+            nameFormContainer.style.display = 'block';
+            makeBtn.remove();
+        };
+        document.querySelector('.hero').appendChild(makeBtn);
+    }
+}
         
         function showShareSection() {
             // Update share link
